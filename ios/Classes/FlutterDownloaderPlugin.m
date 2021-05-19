@@ -1,5 +1,6 @@
 #import "FlutterDownloaderPlugin.h"
 #import "DBManager.h"
+#import "SyncMutableDictionary.h"
 
 #define STATUS_UNDEFINED 0
 #define STATUS_ENQUEUED 1
@@ -39,7 +40,7 @@
     NSObject<FlutterPluginRegistrar> *_registrar;
     NSURLSession *_session;
     DBManager *_dbManager;
-    NSMutableDictionary<NSString*, NSMutableDictionary*> *_runningTaskById;
+    SyncMutableDictionary<NSString*, NSMutableDictionary*> *_runningTaskById;
     NSString *_allFilesDownloadedMsg;
     NSMutableArray *_eventQueue;
     int64_t _callbackHandle;
@@ -848,11 +849,16 @@ static BOOL debug = YES;
             [self updateTask:key status:STATUS_CANCELED progress:-1];
         }
     }
-    _session = nil;
-    _mainChannel = nil;
-    _dbManager = nil;
-    databaseQueue = nil;
-    _runningTaskById = nil;
+    /**
+    已经杀掉app了, 没必要置为nil了
+    而且多线程下databaseQueue还在被使用, 比如:didFinishDownloadingToURL 方法, 此处置为nil, 导致被使用的地方崩溃
+     
+     **/
+//    _session = nil;
+//    _mainChannel = nil;
+//    _dbManager = nil;
+//    databaseQueue = nil;
+//    _runningTaskById = nil;
 }
 
 # pragma mark - NSURLSessionTaskDelegate
